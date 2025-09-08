@@ -1,0 +1,13 @@
+package org.example.bankcards;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class EmCardServiceTestApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(EmCardServiceTestApplication.class, args);
+	}
+
+}

@@ -1,0 +1,43 @@
+services:
+  card-service:
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-service:5432/${ENV_POSTGRESQL_DB}
+      SPRING_DATASOURCE_USERNAME: ${ENV_POSTGRESQL_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${ENV_POSTGRESQL_PASSWORD}
+      JWT_MASTER_KEY: ${ENV_JWT_MASTER_KEY}
+      JWT_EXPIRES_IN_SEC: ${ENV_JWT_EXPIRES_IN_SEC}
+    ports:
+      - '8080:8080'
+      - '5005:5005'
+    networks:
+      - service-net
+    depends_on:
+      db-service:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src # for dev
+  db-service:
+    image: 'postgres@sha256:aedabd10a05c7304233d006a186a42d7d350b11e702d227dc09a99882dafa142' # PostgreSQL 13.22-trixie
+    environment:
+      - POSTGRES_DB=${ENV_POSTGRESQL_DB}
+      - POSTGRES_USER=${ENV_POSTGRESQL_USERNAME}
+      - POSTGRES_PASSWORD=${ENV_POSTGRESQL_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data-vol:/var/lib/postgresql/data
+    networks:
+      - service-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "$$ENV_POSTGRESQL_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+networks:
+  service-net:
+    driver: bridge
+volumes:
+  db-data-vol: {}
+

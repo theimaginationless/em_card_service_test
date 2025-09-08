@@ -1,0 +1,589 @@
+openapi: 3.0.3
+info:
+  title: Internal Card API
+  version: 1.0.0
+tags:
+  - name: InternalCard
+  - name: InternalCustomer
+  - name: InternalRequestSupport
+  - name: CustomerCard
+paths:
+  /api/v1/internal/card/create:
+    post:
+      tags:
+        - InternalCard
+      operationId: createCard
+      summary: Create a new card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCardRequest'
+      responses:
+        '200':
+          description: Card created successfully
+        '400':
+          description: Bad request
+
+  /api/v1/internal/card/changeStatus:
+    post:
+      tags:
+        - InternalCard
+      operationId: changeStatus
+      summary: Change a card status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardChangeStatusRequest'
+      responses:
+        '200':
+          description: Card status changed successfully
+        '400':
+          description: Bad request
+
+  /api/v1/internal/card/{login}/getAll:
+    get:
+      tags:
+        - InternalCard
+      operationId: getAllCardsByLogin
+      summary: Get all cards for a specific customer
+      parameters:
+        - name: login
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResponse'
+        '400':
+          description: Bad request
+
+  /api/v1/internal/card/getAll:
+    get:
+      tags:
+        - InternalCard
+      operationId: getAllCards
+      summary: Get all cards
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResponse'
+        '400':
+          description: Bad request
+  /api/v1/internal/customer/register:
+    post:
+      tags:
+        - InternalCustomer
+      operationId: registerCustomer
+      summary: Register a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRegisterRequest'
+      responses:
+        '200':
+          description: Customer successfully registered
+        '400':
+          description: Bad Request (invalid input or customer already exists)
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/v1/internal/customer/registerStaff:
+    post:
+      tags:
+        - InternalCustomer
+      operationId: registerStaff
+      summary: Register a new staff user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRegisterRequest'
+      responses:
+        '200':
+          description: Staff successfully registered
+        '400':
+          description: Bad Request (invalid input or staff already exists)
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/v1/internal/support/getNew:
+    get:
+      tags:
+        - InternalRequestSupport
+      operationId: getNewRequests
+      summary: Get list of new support requests
+      parameters:
+        - name: page
+          in: query
+          description: Page number (zero-based)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of new support requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RequestResponse'
+        '400':
+          description: Bad Request
+          content: {}
+  /api/v1/internal/support/take/{requestId}:
+    patch:
+      tags:
+        - InternalRequestSupport
+      operationId: takeRequest
+      summary: Take ownership of a support request
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Request successfully taken
+          content: {}
+        '400':
+          description: Bad Request
+          content: {}
+  /api/v1/internal/support/execute/{requestId}:
+    patch:
+      tags:
+        - InternalRequestSupport
+      operationId: executeRequest
+      summary: Execute a support request
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Request successfully executed
+          content: {}
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to execute request"
+  /api/v1/customer/cards:
+    get:
+      tags:
+        - CustomerCard
+      operationId: getCards
+      summary: Get list of customer cards
+      parameters:
+        - name: page
+          in: query
+          description: Page number (zero-based)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of customer cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResponse'
+        '400':
+          description: Bad Request
+          content: {}
+
+  /api/v1/customer/cards/{id}:
+    get:
+      tags:
+        - CustomerCard
+      operationId: getCard
+      summary: Get card by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Card details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponse'
+        '400':
+          description: Bad Request
+          content: {}
+  /api/v1/customer/cards/{id}/balance:
+    get:
+      tags:
+        - CustomerCard
+      operationId: getCardBalance
+      summary: Get balance of a card
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Card balance
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "1234.56"
+        '400':
+          description: Bad Request
+          content: {}
+
+  /api/v1/customer/cards/transfer:
+    post:
+      tags:
+        - CustomerCard
+      operationId: transferAmount
+      summary: Transfer amount between cards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '200':
+          description: Transfer successful
+          content: {}  # пустое тело
+        '400':
+          description: Bad Request
+          content: {}
+
+  /api/v1/customer/cards/{id}/block:
+    patch:
+      tags:
+        - CustomerCard
+      operationId: requestBlockCard
+      summary: Request block for a card
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Card block requested successfully
+          content: {}  # пустое тело
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to request card block"
+
+  /api/v1/customer/auth/login:
+    post:
+      tags:
+        - CustomerAuth
+      operationId: loginCustomer
+      summary: Authenticate customer and return JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Unauthorized - invalid login or password
+          content: {}
+
+  /api/v1/staff/auth:
+    post:
+      tags:
+        - StaffAuth
+      operationId: loginStaff
+      summary: Authenticate staff and return JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Unauthorized - invalid login or password
+          content: {}
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: User login
+          example: "john_doe"
+        password:
+          type: string
+          description: User password
+          format: password
+          example: "secret123"
+    LoginResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JWT token for authenticated user
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    TransferRequest:
+      type: object
+      properties:
+        fromId:
+          type: string
+        toId:
+          type: string
+        amount:
+          type: string
+          pattern: "^[0-9]+(\\.[0-9]{1,2})?$"
+      required:
+        - fromId
+        - toId
+        - amount
+    RequestResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        externalId:
+          type: string
+        cardNumber:
+          type: string
+          pattern: "^\\*{4} \\*{4} \\*{4} [0-9]{4}$"
+          description: Masked card number "**** **** **** 1234"
+        owner:
+          type: string
+        expiryMonth:
+          type: integer
+          minimum: 1
+          maximum: 12
+          example: 12
+        expiryYear:
+          type: integer
+          minimum: 2025
+          example: 2025
+        status:
+          type: string
+          example: "NEW"
+          minLength: 1
+          enum: ["NEW", "PROCESSING", "DONE", "REJECTED"]
+        newStatus:
+          type: string
+          example: "ACTIVE"
+          minLength: 1
+          enum: ["ACTIVE", "BLOCKED", "EXPIRED"]
+      required:
+        - requestId
+        - externalId
+        - maskedNumber
+        - owner
+        - expiryMonth
+        - expiryYear
+        - status
+        - newStatus
+    CustomerRegisterRequest:
+      type: object
+      properties:
+        login:
+          type: string
+          example: "john_doe"
+        password:
+          type: string
+          format: password
+          example: "secret123"
+      required:
+        - login
+        - password
+    CreateCardRequest:
+      type: object
+      required:
+        - cardNumber
+        - customerLogin
+        - expiryMonth
+        - expiryYear
+      properties:
+        cardNumber:
+          type: string
+          description: Card number
+          pattern: "^\\[0-9]{4} \\[0-9]{4} \\[0-9]{4} [0-9]{4}$"
+        customerLogin:
+          type: string
+          description: Customer login
+          example: "john_doe"
+        expiryMonth:
+          type: integer
+          description: Expiry month
+          minimum: 1
+          maximum: 12
+          example: 12
+        expiryYear:
+          type: integer
+          description: Expiry year
+          minimum: 2025
+          example: 2027
+    CardChangeStatusRequest:
+      type: object
+      required:
+        - externalId
+        - status
+      properties:
+        externalId:
+          type: string
+          description: External card ID
+          example: "a1b2c3d4"
+        status:
+          type: string
+          description: Card status
+          example: "ACTIVE"
+          minLength: 1
+          enum: ["ACTIVE", "BLOCKED", "EXPIRED"]
+    CardResponse:
+      type: object
+      required:
+        - externalId
+        - cardNumber
+        - owner
+        - expiryMonth
+        - expiryYear
+        - status
+        - balance
+      properties:
+        externalId:
+          type: string
+          description: External card ID
+          example: "a1b2c3d4"
+        cardNumber:
+          type: string
+          description: Card number
+          oneOf:
+            - pattern: "^[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}$"
+              example: "1234 5678 9012 3456"
+            - pattern: "^\\*{4} \\*{4} \\*{4} [0-9]{4}$"
+              example: "**** **** **** 3456"
+        owner:
+          type: string
+          description: Card owner
+          example: "John Doe"
+        expiryMonth:
+          type: integer
+          description: Expiry month
+          minimum: 1
+          maximum: 12
+          example: 12
+        expiryYear:
+          type: integer
+          description: Expiry year
+          minimum: 2025
+          example: 2027
+        status:
+          type: string
+          description: Card status
+          minLength: 1
+          example: "ACTIVE"
+          enum: ["ACTIVE", "BLOCKED", "EXPIRED"]
+        balance:
+          type: string
+          description: Card balance
+          pattern: "^[0-9]+(\\.[0-9]{1,2})?$"
+          example: "10.50"

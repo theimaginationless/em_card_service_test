@@ -1,0 +1,15 @@
+access:
+  endpoints:
+    permittedPaths:
+      - path: "/api/v1/customer/auth/**"
+      - path: "/api/v1/staff/auth/**"
+    authenticatedPaths:
+      - path: "/api/v1/customer/cards/**"
+        roles:
+          - USER
+      - path: "/api/v1/internal/**"
+        roles:
+          - ADMIN
+      - path: "/api/v1/internal/support/**"
+        roles:
+          - ADMIN
