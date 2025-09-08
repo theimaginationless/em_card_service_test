@@ -1,0 +1,32 @@
+databaseChangeLog: # insert default staff admin with creds: admin:admin
+  - changeSet:
+      id: 001-insert-staff-admin
+      author: user
+      changes:
+        - insert:
+            tableName: staff
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: "1"
+              - column:
+                  name: hashed_password
+                  value: "$argon2id$v=19$m=65536,t=3,p=1$ULAE/pTzRDPZoauvedM2ynCVUGFL8AeeCVD1BkAeU+U$fWVqcB/kJPagtT5qdW42GVI2mfLXZo12kZUqn6prRpVdBxCKWMblOL4Mo5g1NAU6Yprm2TeLmcQp/H3VJYtv5A"
+              - column:
+                  name: login
+                  value: "admin"
+              - column:
+                  name: role_id
+                  valueNumeric: "1"
+              - column:
+                  name: first_name
+                  value: ""
+              - column:
+                  name: last_name
+                  value: ""
+              - column:
+                  name: middle_name
+                  value: ""
+              - column:
+                  name: pe_jwt_secret
+                  value: "haymfkTxOoSmiMzLXOEnVJOPC92WPVr5N2RZ6LOHfCStEhlJYZY9PGnr7FY4erwj"

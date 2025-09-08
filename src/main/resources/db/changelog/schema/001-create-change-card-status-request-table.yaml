@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-change-card-status-request-table
+      author: user
+      changes:
+        - createTable:
+            tableName: change_card_status_request
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: request_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: created_customer_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: new_card_status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: request_status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: add-fk-ccsr-created-customer
+      author: your_name
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: change_card_status_request
+            baseColumnNames: created_customer_id
+            constraintName: fk_ccsr_customer
+            referencedTableName: customers
+            referencedColumnNames: id
+
+  - changeSet:
+      id: add-fk-ccsr-card
+      author: your_name
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: change_card_status_request
+            baseColumnNames: card_id
+            constraintName: fk_ccsr_card
+            referencedTableName: cards
+            referencedColumnNames: id

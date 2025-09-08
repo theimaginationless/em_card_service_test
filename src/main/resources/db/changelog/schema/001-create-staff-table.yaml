@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-staff-table
+      author: user
+      changes:
+        - createTable:
+            tableName: staff
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: login
+                  type: VARCHAR(255)
+
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+
+              - column:
+                  name: middle_name
+                  type: VARCHAR(255)
+
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: hashed_password
+                  type: VARCHAR(255)
+
+              - column:
+                  name: pe_jwt_secret
+                  type: VARCHAR(255)
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: last_login
+                  type: TIMESTAMP
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: add-fk-staff-role
+      author: your_name
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: staff
+            baseColumnNames: role_id
+            constraintName: fk_staff_role
+            referencedTableName: roles
+            referencedColumnNames: id

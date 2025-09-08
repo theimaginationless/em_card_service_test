@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-cards-table
+      author: user
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: external_card_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: card_number
+                  type: VARCHAR(16)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: expiry_month
+                  type: INT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expiry_year
+                  type: INT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: card_status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: customer_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_cards_customer
+                    references: customers(id)
+
+              - column:
+                  name: balance
+                  type: DECIMAL(19,2)
+                  defaultValueNumeric: 0.00
+                  constraints:
+                    nullable: false

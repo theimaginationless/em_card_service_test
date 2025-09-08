@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-card-transfer-history-table
+      author: user
+      changes:
+        - createTable:
+            tableName: card_transfer_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: customer_initiator_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: card_from_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: card_to_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: amount
+                  type: DECIMAL(19,2)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: add-fk-card-transfer-history-customer
+      author: your_name
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: card_transfer_history
+            baseColumnNames: customer_initiator_id
+            constraintName: fk_cth_customer
+            referencedTableName: customers
+            referencedColumnNames: id
+
+  - changeSet:
+      id: add-fk-card-transfer-history-card-from
+      author: your_name
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: card_transfer_history
+            baseColumnNames: card_from_id
+            constraintName: fk_cth_card_from
+            referencedTableName: cards
+            referencedColumnNames: id
+
+  - changeSet:
+      id: add-fk-card-transfer-history-card-to
+      author: your_name
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: card_transfer_history
+            baseColumnNames: card_to_id
+            constraintName: fk_cth_card_to
+            referencedTableName: cards
+            referencedColumnNames: id
