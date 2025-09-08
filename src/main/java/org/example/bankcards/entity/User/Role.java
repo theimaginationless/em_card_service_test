@@ -14,16 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role_type", nullable = false, unique = true)
     private RoleType roleType;
-
-    @OneToMany(cascade = CascadeType.PERSIST)
-    private List<Staff> staffList;
-
 
     public Role(RoleType roleType) {
         this.roleType = roleType;
