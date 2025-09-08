@@ -9,7 +9,6 @@ services:
       JWT_EXPIRES_IN_SEC: ${ENV_JWT_EXPIRES_IN_SEC}
     ports:
       - '8080:8080'
-      - '5005:5005'
     networks:
       - service-net
     depends_on:
