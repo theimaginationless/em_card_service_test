@@ -376,7 +376,7 @@ paths:
           description: Unauthorized - invalid login or password
           content: {}
 
-  /api/v1/staff/auth:
+  /api/v1/staff/auth/login:
     post:
       tags:
         - StaffAuth
