@@ -6,6 +6,7 @@ import org.example.bankcards.exception.C2CTransferException;
 import org.example.bankcards.security.principal.GenericPrincipal;
 import org.example.bankcards.service.RequestSupportService;
 import org.example.bankcards.service.card.CardService;
+import org.example.bankcards.service.card.CardTransferFgService;
 import org.example.bankcards.service.card.CardTransferService;
 import org.example.bankcards.util.SecurityContextUtil;
 import org.example.model.CardResponse;
@@ -28,6 +29,7 @@ class CustomerControllerTest {
 
     private CardService cardService;
     private CardTransferService cardTransferService;
+    private CardTransferFgService cardTransferFgService;
     private RequestSupportService requestSupportService;
     private CustomerController controller;
 
@@ -37,8 +39,9 @@ class CustomerControllerTest {
     void setup() {
         cardService = mock(CardService.class);
         cardTransferService = mock(CardTransferService.class);
+        cardTransferFgService = mock(CardTransferFgService.class);
         requestSupportService = mock(RequestSupportService.class);
-        controller = new CustomerController(cardService, cardTransferService, requestSupportService);
+        controller = new CustomerController(cardService, cardTransferFgService, requestSupportService);
 
         principal = GenericPrincipal.builder()
                 .id(1L)
@@ -107,7 +110,7 @@ class CustomerControllerTest {
         request.setToId("to456");
         request.setAmount("500");
 
-        doNothing().when(cardTransferService).transferAmount(anyString(), anyString(), any(BigDecimal.class), eq(1L));
+        doNothing().when(cardTransferFgService).transferAmount(anyString(), anyString(), any(BigDecimal.class), eq(1L));
 
         try (MockedStatic<SecurityContextUtil> securityMock = Mockito.mockStatic(SecurityContextUtil.class)) {
             securityMock.when(() -> SecurityContextUtil.getGenericPrincipal(any())).thenReturn(Optional.of(principal));
@@ -116,7 +119,7 @@ class CustomerControllerTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
         }
 
-        verify(cardTransferService, times(1))
+        verify(cardTransferFgService, times(1))
                 .transferAmount("from123", "to456", BigDecimal.valueOf(500), 1L);
     }
 
@@ -127,7 +130,7 @@ class CustomerControllerTest {
         request.setToId("to456");
         request.setAmount("500");
 
-        doThrow(new C2CTransferException("Error")).when(cardTransferService)
+        doThrow(new C2CTransferException("Error")).when(cardTransferFgService)
                 .transferAmount(anyString(), anyString(), any(BigDecimal.class), eq(1L));
 
         try (MockedStatic<SecurityContextUtil> securityMock = Mockito.mockStatic(SecurityContextUtil.class)) {

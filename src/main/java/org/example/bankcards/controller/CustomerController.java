@@ -7,9 +7,9 @@ import org.example.api.CustomerCardApi;
 import org.example.bankcards.dto.CardDto;
 import org.example.bankcards.exception.AuthCustomerException;
 import org.example.bankcards.exception.C2CTransferException;
-import org.example.bankcards.service.card.CardService;
-import org.example.bankcards.service.card.CardTransferService;
 import org.example.bankcards.service.RequestSupportService;
+import org.example.bankcards.service.card.CardService;
+import org.example.bankcards.service.card.CardTransferFgService;
 import org.example.bankcards.util.SecurityContextUtil;
 import org.example.model.CardResponse;
 import org.example.model.TransferRequest;
@@ -31,7 +31,7 @@ import java.util.List;
 public class CustomerController implements CustomerCardApi {
 
     private final CardService cardService;
-    private final CardTransferService cardTransferService;
+    private final CardTransferFgService cardTransferFgService;
     private final RequestSupportService requestSupportService;
     
 
@@ -62,7 +62,18 @@ public class CustomerController implements CustomerCardApi {
 
     @Override
     public ResponseEntity<List<CardResponse>> getCards(Integer page, Integer size) {
-        return CustomerCardApi.super.getCards(page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        try {
+            var principal = SecurityContextUtil.getGenericPrincipal(SecurityContextHolder.getContext())
+                    .orElseThrow(AuthCustomerException::new);
+            List<CardResponse> cardDtoList = cardService.getCardsByCustomerId(pageable, principal.getId()).stream()
+                    .map(this::cardDtoToResponse)
+                    .toList();
+            return ResponseEntity.ok(cardDtoList);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @Override
@@ -83,7 +94,7 @@ public class CustomerController implements CustomerCardApi {
         try {
             var principal = SecurityContextUtil.getGenericPrincipal(SecurityContextHolder.getContext())
                     .orElseThrow(AuthCustomerException::new);
-            cardTransferService.transferAmount(
+            cardTransferFgService.transferAmount(
                     transferRequest.getFromId(),
                     transferRequest.getToId(),
                     new BigDecimal(transferRequest.getAmount()),
@@ -92,26 +103,6 @@ public class CustomerController implements CustomerCardApi {
         } catch (C2CTransferException | AuthCustomerException e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    @GetMapping
-    public ResponseEntity<?> getCards(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        try {
-            var principal = SecurityContextUtil.getGenericPrincipal(SecurityContextHolder.getContext())
-                    .orElseThrow(AuthCustomerException::new);
-            List<CardResponse> cardDtoList = cardService.getCardsByCustomerId(pageable, principal.getId()).stream()
-                    .map(this::cardDtoToResponse)
-                    .toList();
-            return ResponseEntity.ok(cardDtoList);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
         }
     }
 

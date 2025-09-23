@@ -45,7 +45,7 @@ public class CardTransferService {
             validateCardForTransfer(secondCard);
             List<Card> transferFromToCardOrderList;
             if (fromCard.equals(firstCard.getExternalCardId())) {
-//                validateCardOnCustomer(firstCard, customerId);
+                validateCardOnCustomer(firstCard, customerId);
                 if (firstCard.getBalance().compareTo(amount) < 0) {
                     throw new C2CTransferException("Don't enough balance available");
                 }
@@ -53,7 +53,7 @@ public class CardTransferService {
                 secondCard.setBalance(secondCard.getBalance().add(amount));
                 transferFromToCardOrderList = List.of(firstCard, secondCard);
             } else {
-//                validateCardOnCustomer(secondCard, customerId);
+                validateCardOnCustomer(secondCard, customerId);
                 secondCard.setBalance(secondCard.getBalance().subtract(amount));
                 firstCard.setBalance(firstCard.getBalance().add(amount));
                 transferFromToCardOrderList = List.of(secondCard, firstCard);
@@ -79,7 +79,7 @@ public class CardTransferService {
 
     private void validateCardOnCustomer(Card card, long customerId) throws CardValidationFailedException {
         if (card.getCustomer().getId() != customerId) {
-            throw new CardValidationFailedException("Accept to withdraw from another card." +
+            throw new CardValidationFailedException("Accept to withdraw from card by another customer." +
                     "externalCardId: " + card.getExternalCardId() +
                     "customerId: " + customerId);
         }

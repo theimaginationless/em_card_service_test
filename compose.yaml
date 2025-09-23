@@ -5,15 +5,19 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db-service:5432/${ENV_POSTGRESQL_DB}
       SPRING_DATASOURCE_USERNAME: ${ENV_POSTGRESQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${ENV_POSTGRESQL_PASSWORD}
+      SPRING_DATA_REDIS_HOST: notification-redis-service
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${ENV_NOTIFICATION_REDIS_PASSWORD}
       JWT_MASTER_KEY: ${ENV_JWT_MASTER_KEY}
       JWT_EXPIRES_IN_SEC: ${ENV_JWT_EXPIRES_IN_SEC}
     ports:
       - '8080:8080'
+      - '5005:5005'
     networks:
       - service-net
     depends_on:
-      db-service:
-        condition: service_healthy
+      - notification-redis-service
+      - db-service
     volumes:
       - ./src:/app/src # for dev
   db-service:
@@ -34,9 +38,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  notification-redis-service:
+    image: 'redis@sha256:acb90ced0bd769b7c04cb4c32c4494ba7b3e0ee068bdbfff0eeb0d31c2a21078' # Redis 8.2.1
+    command: [ "redis-server", "--appendonly", "yes", "--requirepass", "${ENV_NOTIFICATION_REDIS_PASSWORD}" ] # For DEV PURPOSE!
+    environment:
+      - REDIS_PASSWORD=${ENV_NOTIFICATION_REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - service-net
 networks:
   service-net:
     driver: bridge
 volumes:
   db-data-vol: {}
+  redis-data: {}
 
